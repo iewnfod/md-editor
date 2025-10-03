@@ -4,7 +4,7 @@ import "katex/dist/katex.min.css";
 import {useEffect} from "react";
 import {invoke} from "@tauri-apps/api/core";
 import {EXAMPLE_MARKDOWN} from "../constant.ts";
-import {EditorContent, Node, useEditor} from "@tiptap/react";
+import {EditorContent, useEditor} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {TextStyleKit} from "@tiptap/extension-text-style";
 import {Table, TableRow} from "@tiptap/extension-table";
@@ -12,7 +12,13 @@ import CodeBlock from "@tiptap/extension-code-block";
 import Mathematics, {migrateMathStrings} from "@tiptap/extension-mathematics";
 import {handleSave, solveMdHtml} from "./md.ts";
 import {renderToMarkdown} from "@tiptap/static-renderer/pm/markdown";
-import {CustomTableCell, CustomTableHeader} from "../extensions/CustomTable.ts";
+import {
+    CustomTableCell,
+    CustomTableHeader,
+    renderTable,
+    renderTableCell,
+    renderTableHeader
+} from "../extensions/CustomTable.ts";
 
 const extensions = [
     TextStyleKit,
@@ -94,72 +100,4 @@ export default function MdView({
     return (
         <EditorContent editor={editor} className="tiptap"/>
     );
-}
-
-function renderTable({children} : { children: string | string[] }) {
-    if (children.length > 0) {
-        const thData = children[0].toString().trim();
-        const thCells = thData.split("|").map((x) => x.trim());
-        const dividers: string[] = [];
-        const thContents: string[] = [];
-        thCells.forEach((x) => {
-            if (x) {
-                const data = x.split(':');
-                const align = data[data.length-1];
-                const content = data.slice(0, -1).join(':').trim();
-                switch (align) {
-                    case "left":
-                        dividers.push(":---");
-                        break;
-                    case "right":
-                        dividers.push("---:");
-                        break;
-                    case "center":
-                        dividers.push(":---:");
-                        break;
-                    default:
-                        dividers.push("---");
-                        break;
-                }
-                thContents.push(content);
-            }
-        });
-        const th = "| " + thContents.join(" | ") + " |";
-        const dividerRow = "| " + dividers.join(" | ") + " |";
-        const rows = [...children].slice(1).map(r => r.toString().trim());
-        return "\n" + th + "\n" + dividerRow + "\n" + rows.join("\n") + "\n";
-    } else {
-        return "";
-    }
-}
-
-function renderTableHeader({node, children} : {node: Node, children: string | string[] | undefined}) {
-    // @ts-ignore
-    const align = node.attrs.align || "";
-    let content = "";
-    console.log(children);
-    if (children) {
-        if (typeof children === "string") {
-            content = children.trim();
-        } else {
-            const c = children.map(x => x.trim());
-            content = c.join("<br/>");
-        }
-    }
-    content = content.replaceAll('\n', '<br/>');
-    return `${content.trim()}:${align}`;
-}
-
-function renderTableCell({children} : {children: string | string[] | undefined}) {
-    let content = "";
-    if (children) {
-        if (typeof children === "string") {
-            content = children.trim();
-        } else {
-            const c = children.map(x => x.trim());
-            content = c.join("<br/>");
-        }
-    }
-    content = content.replaceAll('\n', '<br/>');
-    return content.trim();
 }
