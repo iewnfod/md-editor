@@ -1,0 +1,42 @@
+{
+  "name": "md-editor",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/joy": "5.0.0-beta.52",
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "~2.4.0",
+    "@tauri-apps/plugin-fs": "~2.4.2",
+    "@tauri-apps/plugin-opener": "^2",
+    "@tiptap/extension-code-block": "^3.6.2",
+    "@tiptap/extension-mathematics": "^3.6.2",
+    "@tiptap/extension-table": "^3.6.2",
+    "@tiptap/extension-text-style": "^3.6.1",
+    "@tiptap/extensions": "^3.6.2",
+    "@tiptap/pm": "^3.6.1",
+    "@tiptap/react": "^3.6.1",
+    "@tiptap/starter-kit": "^3.6.1",
+    "@tiptap/static-renderer": "^3.6.2",
+    "katex": "^0.16.22",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-toastify": "^11.0.5"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "@types/react": "^19.1.8",
+    "@types/react-dom": "^19.1.6",
+    "@vitejs/plugin-react": "^4.6.0",
+    "typescript": "~5.8.3",
+    "vite": "^7.0.4"
+  }
+}
