@@ -26,4 +26,6 @@ markdown = { version = "1.0.0", features = ["serde"] }
 htmd = "0.3.2"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-prevent-default = { version = "3.0.3", features = ["platform-windows"] }
 

@@ -10,10 +10,7 @@
     "opener:default",
     "dialog:default",
     "fs:default",
-    "fs:allow-write",
-    "fs:allow-read",
-    "fs:allow-watch",
-    "fs:allow-write-file",
-    "fs:allow-write-text-file"
+    "shell:default",
+    "shell:allow-open"
   ]
 }

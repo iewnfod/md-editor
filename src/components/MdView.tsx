@@ -19,6 +19,9 @@ import {
     renderTableCell,
     renderTableHeader
 } from "../extensions/CustomTable.ts";
+import {ListKit} from "@tiptap/extension-list";
+import {toast} from "react-toastify";
+import Image from "@tiptap/extension-image";
 
 const extensions = [
     TextStyleKit,
@@ -28,19 +31,35 @@ const extensions = [
     TableRow,
     CustomTableHeader,
     CustomTableCell,
+    ListKit,
     StarterKit.configure({
-        codeBlock: false
+        codeBlock: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+        listKeymap: false,
     }),
     Mathematics,
-    CodeBlock,
+    CodeBlock.configure({
+        languageClassPrefix: "language-",
+        enableTabIndentation: true,
+    }),
+    Image.configure({
+        inline: true,
+        allowBase64: true
+    })
 ];
 
 export default function MdView({
     fp,
-    setFp
+    setFp,
+    saved,
+    setSaved
 }: {
     fp: string,
-    setFp: (fp: string) => void
+    setFp: (fp: string) => void,
+    saved: boolean,
+    setSaved: (saved: boolean) => void
 }) {
     const editor = useEditor({
         extensions,
@@ -48,15 +67,15 @@ export default function MdView({
         onCreate: ({editor}) => {
             migrateMathStrings(editor);
         },
+        onUpdate: () => {
+            console.log("update");
+            setSaved(false);
+        }
     });
 
     useEffect(() => {
-        invoke("md2html", {value: EXAMPLE_MARKDOWN}).then((data) => {
-            if (data && typeof data === "string") {
-                data = solveMdHtml(data);
-                console.log(data);
-                editor.commands.setContent(data as string);
-            }
+        invoke("init").then(() => {
+            console.log("Initialized");
         });
     }, []);
 
@@ -84,7 +103,7 @@ export default function MdView({
                     }
                 });
                 console.log(md);
-                handleSave(md, fp, setFp).then();
+                handleSave(md, fp, setFp, setSaved).then();
             }
         }
     };
@@ -96,6 +115,23 @@ export default function MdView({
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [fp, setFp]);
+
+    useEffect(() => {
+        if (!fp) {
+            return;
+        }
+        toast(`File path changed: ${fp}`);
+        invoke("read_file", {path: fp}).then((content) => {
+            if (typeof content === "string") {
+                invoke("md2html", {value: content}).then((data) => {
+                    if (typeof data === "string") {
+                        data = solveMdHtml(data);
+                        editor.commands.setContent(data as string);
+                    }
+                });
+            }
+        });
+    }, [fp]);
 
     return (
         <EditorContent editor={editor} className="tiptap"/>

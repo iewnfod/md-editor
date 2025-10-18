@@ -1,6 +1,6 @@
 import {save} from "@tauri-apps/plugin-dialog";
-import {writeTextFile} from "@tauri-apps/plugin-fs";
 import {toast} from "react-toastify";
+import {invoke} from "@tauri-apps/api/core";
 
 function getTextContent(html: string) {
     const dom = document.createElement("div");
@@ -24,7 +24,9 @@ export function solveMdHtml(data: string) {
     return data;
 }
 
-export async function handleSave(md: string, path: string, setPath: (path: string) => void) {
+export async function handleSave(md: string, path: string, setPath: (path: string) => void, setSaved: (saved: boolean) => void) {
+    console.log("Saving file...");
+
     try {
         if (md) {
             let p = "";
@@ -41,10 +43,13 @@ export async function handleSave(md: string, path: string, setPath: (path: strin
                 }) || "";
             }
             if (p) {
-                await writeTextFile(p, md);
-                setPath(p);
-                console.log("File saved to", p);
-                toast.success("File saved to " + p);
+                const success = await invoke("write_file", {path: p, content: md});
+                if (success) {
+                    setPath(p);
+                    console.log("File saved to", p);
+                    toast.success("File saved to " + p);
+                    setSaved(true);
+                }
             } else {
                 console.log("Save cancelled");
                 toast.error("Save cancelled");
