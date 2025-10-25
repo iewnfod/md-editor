@@ -3,7 +3,6 @@ import "katex/dist/katex.min.css";
 
 import {useEffect} from "react";
 import {invoke} from "@tauri-apps/api/core";
-import {EXAMPLE_MARKDOWN} from "../constant.ts";
 import {EditorContent, useEditor} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import {TextStyleKit} from "@tiptap/extension-text-style";
@@ -23,6 +22,7 @@ import {ListKit} from "@tiptap/extension-list";
 import {toast} from "react-toastify";
 import Image from "@tiptap/extension-image";
 
+// tiptap extensions
 const extensions = [
     TextStyleKit,
     Table.configure({
@@ -50,6 +50,7 @@ const extensions = [
     })
 ];
 
+// main
 export default function MdView({
     fp,
     setFp,
@@ -61,6 +62,7 @@ export default function MdView({
     saved: boolean,
     setSaved: (saved: boolean) => void
 }) {
+    // editor instance
     const editor = useEditor({
         extensions,
         content: "",
@@ -73,12 +75,14 @@ export default function MdView({
         }
     });
 
+    // initialize
     useEffect(() => {
         invoke("init").then(() => {
             console.log("Initialized");
         });
     }, []);
 
+    // keyboard shortcut for saving
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.repeat) {
             return;
@@ -108,6 +112,7 @@ export default function MdView({
         }
     };
 
+    // register and unregister keyboard event listener
     useEffect(() => {
         document.addEventListener('keydown', handleKeyDown);
 
@@ -116,6 +121,7 @@ export default function MdView({
         };
     }, [fp, setFp]);
 
+    // load file when file path changes
     useEffect(() => {
         if (!fp) {
             return;
@@ -133,6 +139,7 @@ export default function MdView({
         });
     }, [fp]);
 
+    // return editor content component
     return (
         <EditorContent editor={editor} className="tiptap"/>
     );
